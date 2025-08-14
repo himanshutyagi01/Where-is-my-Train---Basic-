@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where is My Train - Track Live Status</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="script.js">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-train"></i>
+                    <span>Where is My Train</span>
+                </div>
+                <nav class="nav-menu">
+                    <a href="#" class="nav-link active">Track Train</a>
+                    <a href="#" class="nav-link">PNR Status</a>
+                    <a href="#" class="nav-link">Live Station</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="search-card">
+                    <h2>Track Your Train Live</h2>
+                    <p>Get real-time train running status, platform info, and delay updates</p>
+                    
+                    <div class="search-tabs">
+                        <button class="tab-btn active" data-tab="train-number">Train Number</button>
+                        <button class="tab-btn" data-tab="route">Route</button>
+                        <button class="tab-btn" data-tab="pnr">PNR Status</button>
+                    </div>
+
+                    <div class="search-forms">
+                        <!-- Train Number Search -->
+                        <div class="search-form active" id="train-number">
+                            <div class="input-group">
+                                <i class="fas fa-train input-icon"></i>
+                                <input type="text" placeholder="Enter Train Number (e.g., 12345)" id="trainNumberInput">
+                                <button class="search-btn" onclick="searchTrain()">
+                                    <i class="fas fa-search"></i>
+                                    Track Train
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Route Search -->
+                        <div class="search-form" id="route">
+                            <div class="route-inputs">
+                                <div class="input-group">
+                                    <i class="fas fa-map-marker-alt input-icon"></i>
+                                    <input type="text" placeholder="From Station" id="fromStation">
+                                </div>
+                                <div class="swap-btn">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="input-group">
+                                    <i class="fas fa-map-marker-alt input-icon"></i>
+                                    <input type="text" placeholder="To Station" id="toStation">
+                                </div>
+                            </div>
+                            <button class="search-btn" onclick="searchRoute()">
+                                <i class="fas fa-search"></i>
+                                Find Trains
+                            </button>
+                        </div>
+
+                        <!-- PNR Status -->
+                        <div class="search-form" id="pnr">
+                            <div class="input-group">
+                                <i class="fas fa-ticket-alt input-icon"></i>
+                                <input type="text" placeholder="Enter 10-digit PNR Number" id="pnrInput">
+                                <button class="search-btn" onclick="checkPNR()">
+                                    <i class="fas fa-search"></i>
+                                    Check Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-card">
+                    <div class="train-header">
+                        <div class="train-info">
+                            <h3 id="trainName">Loading...</h3>
+                            <p id="trainRoute">Loading route...</p>
+                        </div>
+                        <div class="train-status">
+                            <span class="status-badge" id="statusBadge">Tracking...</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Status -->
+                    <div class="live-status">
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="status-details">
+                                <h4>Current Location</h4>
+                                <p id="currentLocation">Determining location...</p>
+                            </div>
+                        </div>
+
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="status-details">
+                                <h4>Delay Status</h4>
+                                <p id="delayStatus">Calculating...</p>
+                            </div>
+                        </div>
+
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div class="status-details">
+                                <h4>Current Speed</h4>
+                                <p id="currentSpeed">-- km/h</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Route Progress -->
+                    <div class="route-progress">
+                        <h4>Route Progress</h4>
+                        <div class="progress-timeline" id="progressTimeline">
+                            <!-- Timeline will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Platform Info -->
+                    <div class="platform-info">
+                        <div class="platform-card">
+                            <h4>Platform Information</h4>
+                            <div class="platform-details">
+                                <div class="platform-item">
+                                    <span>Next Station:</span>
+                                    <strong id="nextStation">Loading...</strong>
+                                </div>
+                                <div class="platform-item">
+                                    <span>Platform:</span>
+                                    <strong id="platform">--</strong>
+                                </div>
+                                <div class="platform-item">
+                                    <span>ETA:</span>
+                                    <strong id="eta">Calculating...</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-grid">
+                    <div class="action-card">
+                        <i class="fas fa-clock"></i>
+                        <h4>Running Status</h4>
+                        <p>Check live train status</p>
+                    </div>
+                    <div class="action-card">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h4>PNR Status</h4>
+                        <p>Verify your booking</p>
+                    </div>
+                    <div class="action-card">
+                        <i class="fas fa-chair"></i>
+                        <h4>Seat Availability</h4>
+                        <p>Check vacant seats</p>
+                    </div>
+                    <div class="action-card">
+                        <i class="fas fa-route"></i>
+                        <h4>Train Route</h4>
+                        <p>View complete route</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Where is My Train</h4>
+                    <p>Your reliable train tracking companion</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li>Live Train Tracking</li>
+                        <li>PNR Status</li>
+                        <li>Platform Information</li>
+                        <li>Seat Availability</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li>Help Center</li>
+                        <li>Contact Us</li>
+                        <li>Privacy Policy</li>
+                        <li>Terms of Service</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Where is My Train. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
